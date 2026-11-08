@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import lexyra_writer_plugin as plugin
@@ -11,7 +12,9 @@ def test_all_styles_are_in_prompt():
         system, messages = plugin.build_messages("Rough words", style)
         assert f"Selected style: {style}." in system
         assert messages[0]["content"]["text"] == "Rough words"
-        assert "Never invent credentials" in system
+        assert "Never invent or imply a role" in system
+        assert "Preserve every factual assertion" in system
+        assert "2 years, not 5" in system
 
 
 def test_invalid_input_is_rejected():
@@ -40,10 +43,10 @@ def test_model_output_is_returned_for_requested_style(monkeypatch):
     monkeypatch.setattr(
         plugin,
         "sample_message",
-        lambda system, messages, invoke_id: {"content": {"type": "text", "text": " Polished result. "}},
+        lambda system, messages, invoke_id: {"content": {"type": "text", "text": " Draft. "}},
     )
-    assert plugin.enhance("Original", "academic", "invoke-1") == {
-        "enhanced_text": "Polished result.",
+    assert plugin.enhance("Draft", "academic", "invoke-1") == {
+        "enhanced_text": "Draft.",
         "style": "academic",
     }
 
@@ -169,3 +172,45 @@ def test_concurrent_sampling_responses_are_correlated_by_request_id(monkeypatch)
             })
         assert first.result(timeout=2)["content"]["text"] == "result-for-first"
         assert second.result(timeout=2)["content"]["text"] == "result-for-second"
+
+
+MAYA_SOURCE = "On 14 March 2024, Maya Chen led a 3-person team that reduced report errors by 12%; she has 2 years of experience, not 5."
+FIDELITY_CASES = [
+    (MAYA_SOURCE, "On March 14, 2024, Maya Chen led a three-person team that reduced report errors by 12%; she has two years of experience, not five.", "On March 14, 2024, Maya Chen led a three-person team that reduced report errors by 12%; she has two years of professional experience."),
+    ("Ravi did not approve the $4,500 budget on 6 May 2025; he only reviewed it.", "Ravi did not approve the $4,500 budget on May 6, 2025; he only reviewed it.", "Ravi approved the $4,500 budget on May 6, 2025; he reviewed it."),
+    ("Leah has some familiarity with Python but has never used it in production; she completed 18 months of coursework only.", "Leah has some familiarity with Python, but has never used it in production; she completed only 18 months of coursework.", "Leah is proficient in Python and has production experience; she completed 18 months of coursework."),
+    ("The trial began on 2 February 2023, included 12 participants, and ended after 6 weeks, not 8.", "The trial began on February 2, 2023, included twelve participants, and ended after six weeks rather than eight.", "The trial began on February 2, 2023, included 12 participants, and ended after 8 weeks."),
+    ("The contract starts 3 April 2025, not 1 May 2025.", "The contract starts April 3, 2025, not May 1, 2025.", "The contract starts May 3, 2025, not May 1, 2025."),
+    ("I supported three launches, excluding Atlas, and did not lead any of them; I contributed as a reviewer only.", "I supported three launches, excluding Atlas, and did not lead any of them; I contributed only as a reviewer.", "I led three launches, including Atlas, and contributed as a reviewer."),
+]
+
+
+@pytest.mark.parametrize("style", list(plugin.VALID_STYLES))
+@pytest.mark.parametrize("source,safe,bad", FIDELITY_CASES)
+def test_fidelity_regressions_all_styles(style, source, safe, bad, monkeypatch):
+    assert plugin.fidelity_issues(source, safe) == []
+    assert plugin.fidelity_issues(source, bad), f"checker accepted meaning-changing output for {style}: {source!r}"
+
+    monkeypatch.setattr(plugin, "sample_message", lambda *_: {"content": {"type": "text", "text": bad}})
+    result = plugin.enhance(source, style, "invoke-regression")
+    assert result["enhanced_text"] == source
+    assert result["fidelity_fallback"] is True
+
+
+MAYA_AUDIT_OUTPUTS = [
+    "On March 14, 2024, Maya Chen led a three-person team to achieve a 12% reduction in report errors. Ms. Chen brings two years of professional experience to this role.",
+    "On 14 March 2024, Maya Chen directed a three-person team to achieve a 12% reduction in reporting errors. She possesses two years of professional experience, rather than five.",
+    "On 14 March 2024, Maya Chen led a 3-person team to reduce report errors by 12%. She has 2 years of experience.",
+    "On 14 March 2024, Maya Chen directed a three-person team to achieve a 12% reduction in report errors. She delivers these results with two years of professional experience.",
+    "On March 14, 2024, Maya Chen led a three-person team to successfully reduce report errors by 12%. She brings two years of professional experience to this role.",
+    "On 14 March 2024, Maya Chen led a three-member team that achieved a 12% reduction in reporting errors. It should be noted that Ms. Chen possesses two years of professional experience, rather than five.",
+]
+
+
+@pytest.mark.parametrize("style,output", list(zip(plugin.VALID_STYLES, MAYA_AUDIT_OUTPUTS)))
+def test_exact_prior_live_maya_outputs_fail_closed_for_each_style(style, output, monkeypatch):
+    assert plugin.fidelity_issues(MAYA_SOURCE, output)
+    monkeypatch.setattr(plugin, "sample_message", lambda *_: {"content": {"type": "text", "text": output}})
+    result = plugin.enhance(MAYA_SOURCE, style, "invoke-maya-audit")
+    assert result["enhanced_text"] == MAYA_SOURCE
+    assert result["fidelity_fallback"] is True

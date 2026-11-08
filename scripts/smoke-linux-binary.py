@@ -60,14 +60,14 @@ def main() -> int:
         assert sampling["params"]["messages"][0]["content"]["text"] == "A Linux packaged smoke check."
         send({"jsonrpc": "2.0", "id": sampling["id"], "result": {
             "role": "assistant",
-            "content": {"type": "text", "text": "Packaged protocol smoke passed."},
+            "content": {"type": "text", "text": "A Linux packaged smoke check."},
             "stopReason": "endTurn",
         }})
         invoked = receive()
         assert invoked["id"] == 3
         assert invoked["result"]["success"] is True
         assert invoked["result"]["data"] == {
-            "enhanced_text": "Packaged protocol smoke passed.", "style": "concise"
+            "enhanced_text": "A Linux packaged smoke check.", "style": "concise"
         }
 
         send({"jsonrpc": "2.0", "id": 4, "method": "health"})
