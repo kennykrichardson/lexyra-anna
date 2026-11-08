@@ -5,6 +5,14 @@
   "category": "productivity",
   "tagline": "Thoughtfully Written",
   "description": "Lexyra is an AI-powered writing enhancement application that transforms rough drafts, informal messages, and unpolished text into clear, articulate, and professionally written content. Powered by Anna's native AI capabilities, Lexyra understands the intent and context of each submission before rewriting it in one of six specialized styles: Professional, Articulate, Concise, Confident, Recruiter-Friendly, and Academic. Unlike conventional grammar checkers, Lexyra focuses on improving expression, structure, clarity, and tone while preserving the writer's original meaning and voice. Users can refine their writing, compare the enhanced result with their original text, and copy the finished version for immediate use. Lexyra makes thoughtful, high-quality writing accessible without sacrificing authenticity.",
+  "homepage_url": "https://github.com/kennykrichardson/lexyra-anna",
+  "support_url": "https://github.com/kennykrichardson/lexyra-anna/issues",
+  "privacy_url": "https://kennykrichardson.github.io/lexyra-privacy-policy/",
+  "cover_url": "https://raw.githubusercontent.com/kennykrichardson/Lexyra-AI-Writing-Assistant/refs/heads/main/frontend/public/lexyra-cover-image.png",
+  "screenshots": [
+    "https://raw.githubusercontent.com/kennykrichardson/Lexyra-AI-Writing-Assistant/refs/heads/main/screenshots/lexyra-home.png",
+    "https://raw.githubusercontent.com/kennykrichardson/Lexyra-AI-Writing-Assistant/refs/heads/main/screenshots/lexyra-purpose.jpeg"
+  ],
   "bundled_executas": {
     "lexyra-writer": { "path": "./executas/lexyra-writer" }
   }
