@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "executa_type": "tool",
   "description": "Meaning-preserving writing enhancement using Anna's host model through reverse Sampling.",
-  "tool_id": "tool-dev-lexyra-writer",
+  "tool_id": "tool-kennykrichardson-lexyra-writer-ymgptp94",
   "type": "python",
   "command": ["python", "lexyra_writer_plugin.py"],
   "enabled": true,

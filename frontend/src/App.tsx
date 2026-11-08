@@ -104,6 +104,7 @@ export default function App() {
 
   const [resultStyle, setResultStyle] =
     useState<WritingStyle>("professional");
+  const [fidelityFallback, setFidelityFallback] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const requestInFlight = useRef(false);
@@ -170,6 +171,7 @@ export default function App() {
     setError("");
     setCopied(false);
     setResult("");
+    setFidelityFallback(false);
     setShowDetails(false);
 
     try {
@@ -180,6 +182,7 @@ export default function App() {
 
       setResult(response.enhanced_text);
       setResultStyle(response.style);
+      setFidelityFallback(response.fidelity_fallback);
       setOnline(true);
     } catch (err: unknown) {
       setOnline(false);
@@ -217,6 +220,7 @@ export default function App() {
   const clearText = useCallback(() => {
     setText("");
     setResult("");
+    setFidelityFallback(false);
     setError("");
     setCopied(false);
   }, []);
@@ -446,7 +450,9 @@ export default function App() {
                       {loading
                         ? "A little polish is on the way."
                         : result
-                          ? `${wordCount} words · Ready to use`
+                          ? fidelityFallback
+                            ? "Original wording shown unchanged to preserve key details."
+                            : `${wordCount} words · Ready to use`
                           : "Your improved writing will appear here."}
                     </p>
                   </div>
