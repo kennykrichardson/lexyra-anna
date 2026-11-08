@@ -2,7 +2,7 @@ name: Build Linux x86_64 Executa
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/lexyra-fidelity-linux-build]
     paths:
       - "executas/lexyra-writer/**"
       - "scripts/build-linux.sh"
