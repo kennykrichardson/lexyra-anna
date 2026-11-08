@@ -90,7 +90,7 @@ _QUALIFIER_PATTERNS = {
 
 MANIFEST: dict[str, Any] = {
     "display_name": "Lexyra Writing Enhancer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Rewrites user text in a selected style using Anna host sampling while preserving its meaning and facts.",
     "host_capabilities": ["llm.sample"],
     "tools": [{
