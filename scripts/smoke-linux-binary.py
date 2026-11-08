@@ -67,7 +67,7 @@ def main() -> int:
         assert invoked["id"] == 3
         assert invoked["result"]["success"] is True
         assert invoked["result"]["data"] == {
-            "enhanced_text": "Packaged protocol smoke passed.", "style": "concise"
+            "enhanced_text": "A Linux packaged smoke check.", "style": "concise"
         }
 
         send({"jsonrpc": "2.0", "id": 4, "method": "health"})
