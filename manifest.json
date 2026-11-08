@@ -1,0 +1,33 @@
+{
+  "schema": 3,
+  "required_executas": [
+    { "tool_id": "bundled:lexyra-writer", "version": "latest" }
+  ],
+  "optional_executas": [],
+  "host_capabilities": ["llm.sample"],
+  "system_prompt_addendum": "Lexyra improves how users express their own thoughts. Preserve the user's meaning, facts, names, dates, numbers, qualifications, and level of experience. Never invent information or credentials. The user chooses one of six writing styles in the app UI.",
+  "tags": ["writing", "editing", "productivity"],
+  "ui": {
+    "bundle": {
+      "format": "static-spa",
+      "entry": "index.html",
+      "external_origins": ["https://fonts.googleapis.com", "https://fonts.gstatic.com"]
+    },
+    "views": [
+      {
+        "name": "main",
+        "title": "Lexyra • Thoughtfully Written",
+        "default": true,
+        "entry": "index.html",
+        "default_size": { "w": 600, "h": 780 },
+        "min_size": { "w": 360, "h": 560 },
+        "resizable": true,
+        "movable": true,
+        "single_instance": true
+      }
+    ],
+    "host_api": {
+      "tools": ["required:bundled:lexyra-writer"]
+    }
+  }
+}

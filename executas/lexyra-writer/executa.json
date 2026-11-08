@@ -1,0 +1,29 @@
+{
+  "slug": "lexyra-writer",
+  "name": "Lexyra Writing Enhancer",
+  "version": "1.0.0",
+  "executa_type": "tool",
+  "description": "Meaning-preserving writing enhancement using Anna's host model through reverse Sampling.",
+  "tool_id": "tool-dev-lexyra-writer",
+  "type": "python",
+  "command": ["python", "lexyra_writer_plugin.py"],
+  "enabled": true,
+  "distribution": {
+    "active": "local",
+    "profiles": {
+      "local": { "type": "local", "supports_protocol": true },
+      "binary": {
+        "type": "binary",
+        "executable_name": "lexyra-writer",
+        "supports_protocol": true,
+        "binary_artifacts": {
+          "linux-x86_64": {
+            "path": "dist/lexyra-writer-linux-x86_64.tar.gz",
+            "entrypoint": "lexyra-writer",
+            "format": "tar.gz"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lexyra-writer"
+version = "1.0.0"
+description = "Anna Executa for Lexyra writing enhancement"
+requires-python = ">=3.10"
+
+[project.scripts]
+lexyra-writer = "lexyra_writer_plugin:main"
+
+[tool.setuptools]
+py-modules = ["lexyra_writer_plugin"]

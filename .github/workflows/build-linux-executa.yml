@@ -1,0 +1,44 @@
+name: Build Linux x86_64 Executa
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "executas/lexyra-writer/**"
+      - "scripts/build-linux.sh"
+      - "scripts/smoke-linux-binary.py"
+      - ".github/workflows/build-linux-executa.yml"
+  pull_request:
+    paths:
+      - "executas/lexyra-writer/**"
+      - "scripts/build-linux.sh"
+      - "scripts/smoke-linux-binary.py"
+      - ".github/workflows/build-linux-executa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: executas/lexyra-writer/requirements-dev.txt
+      - name: Install build and test tools
+        run: python -m pip install --upgrade pip pyinstaller pytest
+      - name: Run Executa protocol tests
+        run: python -m pytest executas/lexyra-writer/tests -q
+      - name: Build and inspect Linux x86_64 package
+        run: bash scripts/build-linux.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lexyra-writer-linux-x86_64
+          path: executas/lexyra-writer/dist/lexyra-writer-linux-x86_64.tar.gz
+          if-no-files-found: error
+          retention-days: 14
